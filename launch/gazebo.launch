@@ -1,0 +1,26 @@
+<launch>
+  <arg name="sample" default="urdf"/>
+
+  <node name="teleop_twist_keyboard" pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py">
+    <remap from="cmd_vel" to="/agv_eval_description/diff_drive_controller/cmd_vel"/>
+  </node>
+  
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find agv_eval_description)/world/test.world"/>
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="$(optenv GUI true)"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>
+
+  <include file="$(find agv_eval_description)/launch/spawn.launch">
+    <arg name="x_pos" value="0.0"/>
+    <arg name="y_pos" value="0.0"/>
+    <arg name="z_pos" value="0.1"/>
+    <arg name="robot_state" value="false"/>
+    <arg name="sample" value="$(arg sample)"/>
+  </include>
+
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+</launch>

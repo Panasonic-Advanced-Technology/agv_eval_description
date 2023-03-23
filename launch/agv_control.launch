@@ -1,0 +1,12 @@
+<launch>
+
+  <!-- Load joint controller configurations from YAML file to parameter server -->
+  <rosparam file="$(find agv_eval_description)/config/diff_drive_controller.yaml" command="load" ns="/agv_eval_description" />
+
+  <!-- load the controllers -->
+  <node name="controller_spawner" pkg="controller_manager"
+	type="spawner" output="$(optenv ATMOBI_LOG_TARGET screen)" respawn="false" ns="/agv_eval_description"
+	args="joint_state_controller diff_drive_controller">
+  </node>
+  
+</launch>
