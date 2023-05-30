@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:include filename="$(find agv_eval_description)/urdf/common.xacro"/>
+
+  <xacro:macro name="base_v0" params="parent">
+    <joint name="base_link_joint" type="fixed">
+      <origin xyz="0 0 0"/>
+      <parent link="${parent}"/>
+      <child link="base_axle"/>
+    </joint>
+
+    <link name="base_axle">
+      <visual>
+    	<origin xyz="0 0 0.1" rpy="0 0 0" />
+        <geometry>
+          <box size="0.69 0.3 0.2"/>
+        </geometry>
+        <material name="">
+          <color rgba="0.5 0.5 0.5 1" />
+        </material>
+      </visual>
+      <collision>
+      	<origin xyz="0 0 0.1" rpy="0 0 0" />
+        <geometry>
+          <box size="0.69 0.3 0.2"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <origin xyz="0 0 0.05"/>
+        <xacro:box_inertial mass="45" height="0.69" width="0.51" depth="0.10"/>
+      </inertial>
+    </link>
+  </xacro:macro>
+
+  <xacro:macro name="base_gazebo_v0">
+    <gazebo reference="base_axle">
+      <selfCollide>false</selfCollide>
+      <mu1 value="0.05"/>
+      <mu2 value="0.05"/>
+    </gazebo>
+  </xacro:macro>
+
+</robot>

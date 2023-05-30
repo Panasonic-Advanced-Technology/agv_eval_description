@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:include filename="$(find agv_eval_description)/urdf/common.xacro"/>
+
+  <xacro:property name="caster_radius" value="${0.10/2}"/>
+  <xacro:property name="caster_length" value="0.04"/>
+  <xacro:property name="caster_mass" value="0.5"/>
+
+  <xacro:macro name="caster_v0" params="prefix parent *joint_origin">
+    <joint name="${prefix}_swing_joing" type="continuous">
+      <xacro:insert_block name="joint_origin"/>
+      <parent link="${parent}"/>
+      <child link="${prefix}_swing_link"/>
+      <axis xyz="0 0 1"/>
+    </joint>
+    <link name="${prefix}_swing_link">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <xacro:box_inertial mass="0.2" height="0.1" width="0.05" depth="0.05"/>
+      </inertial>
+    </link>
+
+    <joint name="${prefix}_sus_joint" type="revolute">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <parent link="${prefix}_swing_link"/>
+      <child link="${prefix}_sus_link"/>
+      <axis xyz="0 1 0"/>
+      <limit lower="0.0" upper="0.5" effort="0" velocity="0"/>
+      <dynamics damping="0.7"/>
+    </joint>
+    <link name="${prefix}_sus_link">
+      <visual>
+        <origin xyz="-0.025 0 -0.05" rpy="0 0.5 0"/>
+        <geometry>
+          <box size="0.01 0.05 0.1"/>
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="-0.025 0 -0.05" rpy="0 0.5 0"/>
+        <geometry>
+          <box size="0.01 0.05 0.1"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <xacro:box_inertial mass="0.2" height="0.1" width="0.05" depth="0.05"/>
+      </inertial>
+    </link>
+
+    <gazebo reference="${prefix}_sus_joint">
+      <implicitSpringDamper>true</implicitSpringDamper>
+      <springStiffness>45</springStiffness>
+      <springReference>0.0</springReference>
+    </gazebo>
+
+    <joint name="${prefix}_caster_joint" type="continuous">
+      <origin xyz="-0.05 0 -0.1" rpy="0 0 0"/>
+      <parent link="${prefix}_sus_link"/>
+      <child link="${prefix}_caster_link"/>
+      <axis xyz="0 -1 0"/>
+      <dynamics damping="0.01"/>
+    </joint>
+
+    <link name="${prefix}_caster_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="${-M_PI/2} 0 0"/>
+        <geometry>
+          <cylinder radius="${caster_radius}" length="${caster_length}"/>
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="${-M_PI/2} 0 0"/>
+        <geometry>
+          <cylinder radius="${caster_radius}" length="${caster_length}"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <origin xyz="0 0 0" rpy="${-M_PI/2} 0 0"/>
+        <xacro:cylinder_inertial mass="${caster_mass}" radius="${caster_radius}" length="${caster_length}"/>
+      </inertial>
+    </link>
+    <xacro:caster_gazebo_v0 prefix="${prefix}"/>
+
+  </xacro:macro>
+
+  <xacro:macro name="caster_gazebo_v0" params="prefix">
+    <gazebo reference="${prefix}_caster_link">
+      <selfCollide>false</selfCollide>
+      <mu1 value="2.5" />
+      <mu2 value="2.5" />
+      <kp value="1e7" />
+      <kd value="1" />
+      <!--fdir1 value="1 0 0"/-->
+      <material>Gazebo/Black</material>
+    </gazebo>
+  </xacro:macro>
+
+</robot>
